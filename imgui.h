@@ -959,6 +959,21 @@ namespace ImGui
     IMGUI_API void*         MemAlloc(size_t size);
     IMGUI_API void          MemFree(void* ptr);
 
+    // FIXME-IMSTR
+    // Functions which could accept both 'const char*' and 'const void*' now have an ambiguity between 'ImStrv' and 'const void*' when passed literals.
+    // Binding generators would likely need to ignore those.
+    // See https://github.com/ocornut/imgui/issues/5079
+IM_MSVC_RUNTIME_CHECKS_OFF
+    inline void     PushID(const char* str_id)                                                                              { PushID(ImStrv(str_id)); }
+    inline ImGuiID  GetID(const char* str_id)                                                                               { return GetID(ImStrv(str_id)); };
+    inline bool     TreeNode(const char* str_id, const char* fmt, ...) IM_FMTARGS(2)                                        { va_list args; va_start(args, fmt); bool ret = TreeNodeV(ImStrv(str_id), fmt, args); va_end(args); return ret; }
+    inline bool     TreeNodeV(const char* str_id, const char* fmt, va_list args) IM_FMTLIST(2)                              { return TreeNodeV(ImStrv(str_id), fmt, args); }
+    inline bool     TreeNodeEx(const char* str_id, ImGuiTreeNodeFlags flags, const char* fmt, ...) IM_FMTARGS(3)            { va_list args; va_start(args, fmt); bool ret = TreeNodeExV(ImStrv(str_id), flags, fmt, args); va_end(args); return ret; }
+    inline bool     TreeNodeExV(const char* str_id, ImGuiTreeNodeFlags flags, const char* fmt, va_list args) IM_FMTLIST(3)  { return TreeNodeEx(ImStrv(str_id), flags, fmt, args); }
+    inline void     TreePush(const char* str_id)                                                                            { TreePush(ImStrv(str_id)); }
+IM_MSVC_RUNTIME_CHECKS_RESTORE
+
+
 } // namespace ImGui
 
 //-----------------------------------------------------------------------------
